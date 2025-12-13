@@ -1,0 +1,43 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: ['book-frontend/**']
+  pull_request:
+    branches: [ main ]
+    paths: ['book-frontend/**']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: book-frontend/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd book-frontend
+        npm ci
+
+    - name: Run build
+      run: |
+        cd book-frontend
+        npm run build
+
+    - name: Run linting
+      run: |
+        cd book-frontend
+        npm run lint || true  # Allow linting to fail without stopping the workflow
+
+    - name: Run tests
+      run: |
+        cd book-frontend
+        npm test -- --passWithNoTests

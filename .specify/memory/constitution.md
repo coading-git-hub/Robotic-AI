@@ -1,55 +1,83 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Physical AI & Humanoid Robotics Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Technical Accuracy and Documentation Excellence
+All content must be based on official documentation from authoritative sources (ROS 2, Gazebo, Unity, Isaac, Nav2, OpenAI, Qdrant, Neon). Every tutorial, code example, and explanation must be verified against official documentation and proven to work in practice.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Educational Clarity and Accessibility
+Content must be designed for students and newcomers to robotics. Complex concepts should be broken down into digestible lessons with clear explanations, step-by-step tutorials, and practical examples. All materials should be beginner-friendly while maintaining technical depth.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Reproducibility and Consistency
+Every tutorial, example, and procedure must be fully reproducible in a clean environment. The book and RAG system must maintain consistent content. All code examples should work when copy-pasted and all setups should be achievable from scratch.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Modularity and Structured Learning
+The curriculum follows a modular approach with 4 core modules: ROS 2 fundamentals, Simulation environments (Gazebo & Unity), NVIDIA Isaac ecosystem, and Vision-Language-Action systems. Each module builds upon the previous ones while remaining self-contained.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Integration and Practical Application
+Focus on connecting different systems and technologies. The capstone project (Autonomous Humanoid) demonstrates integration of voice input, planning, navigation, object detection, and manipulation in a cohesive system.
 
-### [PRINCIPLE_6_NAME]
+### VI. Open Source and Community Standards
+All code, documentation, and tools follow open-source best practices. Clear licensing, contribution guidelines, and community standards are maintained. All dependencies and tools are chosen with long-term sustainability in mind.
 
+## Additional Constraints and Standards
 
-[PRINCIPLE__DESCRIPTION]
+### Technology Stack Requirements
+- Docusaurus with Mintlify-style theme for documentation
+- GitHub Pages for frontend hosting
+- FastAPI backend for RAG system
+- Qdrant Cloud for embeddings storage
+- Neon Postgres for query logging
+- ROS 2 Humble Hawksbill or newer
+- NVIDIA Isaac ROS packages for perception
+- Unity 2022.3 LTS or newer for simulation
+- Python 3.10+ for all backend services
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Content Standards
+- 120-200 pages equivalent in Docusaurus format
+- Quarter Overview with 4 modules structure
+- Each module contains Lessons → Headings → Sub-headings → Code + Examples
+- Full Capstone project: Autonomous Humanoid with voice → plan → navigate → detect → manipulate pipeline
+- Selected-text mode for RAG chatbot to ensure precise answers
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Deployment and Infrastructure
+- Frontend deployed to GitHub Pages
+- RAG backend deployed on Render/Fly.io
+- All examples must work in clean ROS 2 + Isaac environment
+- Continuous integration and deployment workflows established
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Feature Development Process
+1. Create feature specification in `specs/<feature>/spec.md`
+2. Develop architectural plan in `specs/<feature>/plan.md`
+3. Break down into testable tasks in `specs/<feature>/tasks.md`
+4. Implement with test-driven approach
+5. Validate against acceptance criteria
+6. Document in Docusaurus format
+7. Add to RAG system for chatbot access
+
+### Quality Gates
+- All tutorials tested in fresh environments
+- Code examples validated for correctness
+- Cross-references between book and RAG system verified
+- Performance benchmarks met for RAG system
+- Security reviews for all deployed services
+
+### Review Process
+- Technical accuracy verified by domain experts
+- Educational effectiveness validated by teaching staff
+- Reproducibility confirmed on different machines
+- Integration points tested across all systems
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+The Physical AI & Humanoid Robotics project operates under these constitutional rules:
+- All content must align with official documentation from authoritative sources
+- Student accessibility is prioritized over technical completeness
+- All examples and tutorials must be reproducible in clean environments
+- Integration between book and RAG system is maintained consistently
+- Capstone project serves as the ultimate integration test for all components
+- All changes require validation against the core principles outlined above
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-12 | **Last Amended**: 2025-12-12

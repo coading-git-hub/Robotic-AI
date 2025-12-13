@@ -1,0 +1,362 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/* Custom CSS for Physical AI & Humanoid Robotics Course */
+
+/* Responsive adjustments for navigation sidebar */
+@media (max-width: 996px) {
+  .theme-doc-sidebar-container {
+    position: fixed;
+    z-index: 1000;
+    top: 60px;
+    left: 0;
+    width: 300px;
+    height: calc(100vh - 60px);
+    background-color: var(--ifm-background-surface-color);
+    transform: translateX(-100%);
+    transition: transform var(--ifm-transition-fast) ease;
+  }
+
+  .theme-doc-sidebar-container.sidebar-active {
+    transform: translateX(0);
+  }
+
+  .docPage_wrapper {
+    padding-left: 0;
+  }
+
+  .docPage_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-styles-module {
+    grid-template-columns: 0 fr minmax(0, 1fr) 0;
+  }
+}
+
+/* Responsive adjustments for main content */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    width: 300px;
+  }
+
+  .docMainContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocPage-Layout-styles-module {
+    flex: 1;
+  }
+}
+
+/* Adjust content width for better readability on large screens */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1400px;
+  }
+
+  .docItemContainer_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module,
+  .docItemContainerExpanded_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Layout-styles-module {
+    max-width: 800px;
+  }
+}
+
+/* Responsive adjustments for code blocks */
+@media (max-width: 768px) {
+  .prism-code {
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+  }
+
+  /* Make code blocks horizontally scrollable on small screens */
+  .prism-code {
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
+  }
+}
+
+/* Responsive adjustments for tables */
+@media (max-width: 768px) {
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Make sure tables are scrollable on small screens */
+  table {
+    min-width: 600px;
+  }
+}
+
+/* Responsive adjustments for headings and content */
+.docTitle_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Content-styles-module {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .docTitle_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Content-styles-module {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .docTitle_node_modules-\@docusaurus-theme-classic-lib-theme-DocItem-Content-styles-module {
+    font-size: 1.5rem;
+  }
+}
+
+/* Responsive adjustments for sidebar */
+.theme-doc-sidebar-menu .menu__list-item {
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 996px) {
+  .theme-doc-sidebar-menu .menu__list-item {
+    margin: 0.125rem 0;
+  }
+}
+
+/* Adjust font sizes for better readability on different screens */
+.markdown {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .markdown {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+/* Responsive adjustments for navigation bar */
+.navbar {
+  height: 60px;
+  padding: 0 1rem;
+}
+
+@media (max-width: 996px) {
+  .navbar {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Responsive adjustments for footer */
+.footer {
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .footer__links {
+    margin: 1rem 0;
+  }
+
+  .footer__col {
+    margin: 1rem 0;
+  }
+}
+
+/* Responsive adjustments for buttons and interactive elements */
+.button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile-friendly adjustments for search */
+.navbar__search {
+  padding-left: 0.5rem;
+}
+
+@media (max-width: 996px) {
+  .navbar__search {
+    display: none;
+  }
+}
+
+/* Responsive adjustments for TOC (Table of Contents) */
+.table-of-contents {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 996px) {
+  .table-of-contents {
+    display: none;
+  }
+}
+
+/* Responsive adjustments for images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive adjustments for embedded content */
+iframe,
+video,
+embed {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Adjustments for better mobile experience */
+.pagination-nav__link {
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .pagination-nav__link {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+/* Responsive adjustments for alert blocks */
+.alert {
+  margin: 1.5rem 0;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .alert {
+    margin: 1rem 0;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Responsive adjustments for cards and containers */
+.card {
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+}
+
+/* Mobile-specific navigation adjustments */
+.navbar-sidebar__backdrop {
+  z-index: 1001;
+}
+
+/* Adjustments for better touch experience */
+.menu__link,
+.button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+}
+
+/* Responsive adjustments for complex layouts */
+.row {
+  margin: 0 -0.5rem;
+}
+
+.row .col {
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .row .col {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Adjustments for syntax highlighting on mobile */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.token.namespace {
+  opacity: 0.7;
+}
+
+/* Responsive code block adjustments */
+.theme-code-block {
+  font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
+  .theme-code-block {
+    font-size: 0.8em;
+  }
+}
+
+/* Custom styles for Physical AI course content */
+.physical-ai-highlight {
+  background-color: rgba(255, 229, 100, 0.3);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .physical-ai-highlight {
+    font-size: 0.9em;
+  }
+}
+
+/* Responsive adjustments for course-specific elements */
+.week-section {
+  border-left: 4px solid #444d58;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .week-section {
+    border-left: 3px solid #444d58;
+    padding-left: 0.75rem;
+    margin: 1rem 0;
+  }
+}
+
+/* Responsive adjustments for sidebar categories */
+.menu__list .menu__list {
+  margin-left: 0.75rem;
+}
+
+@media (max-width: 996px) {
+  .menu__list .menu__list {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Adjustments for better mobile navigation */
+.theme-doc-breadcrumbs {
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .theme-doc-breadcrumbs {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Footer link adjustments */
+.footer__link-item {
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .footer__link-item {
+    line-height: 1.4;
+  }
+}
