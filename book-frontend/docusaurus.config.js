@@ -13,15 +13,13 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://physical-ai-humanoid-robotics.github.io',
+  url: 'https://robotic-ai-ryh2.vercel.app/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<org-name>/<repo-name>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'physical-ai-humanoid-robotics', // Usually your GitHub org/user name.
-  projectName: 'physical-ai-humanoid-robotics', // Usually your repo name.
+  // Deployment configuration for Vercel
+  // GitHub pages deployment config removed for Vercel deployment
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
