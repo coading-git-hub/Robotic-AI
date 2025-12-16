@@ -38,6 +38,13 @@ const FloatingIcon = styled.div`
   &:active {
     transform: scale(0.95);
   }
+
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
 `;
 
 const ChatContainer = styled.div`
@@ -54,6 +61,21 @@ const ChatContainer = styled.div`
   z-index: 1000;
   overflow: hidden;
   transition: all 0.3s ease;
+
+  @media (max-width: 480px) {
+    width: calc(100% - 40px);
+    height: calc(100vh - 120px);
+    bottom: 80px;
+    right: 20px;
+    left: 20px;
+  }
+
+  @media (max-width: 768px) {
+    width: 340px;
+    height: 450px;
+    bottom: 80px;
+    right: 15px;
+  }
 `;
 
 const ChatHeader = styled.div`
@@ -96,6 +118,12 @@ const MessageBubble = styled.div`
       border-bottom-left-radius: 4px;
     `
   }
+
+  @media (max-width: 480px) {
+    max-width: 90%;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
 `;
 
 const ChatInput = styled.div`
@@ -116,6 +144,11 @@ const Input = styled.input`
   &:focus {
     border-color: #667eea;
   }
+
+  @media (max-width: 480px) {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
 `;
 
 const SendButton = styled.button`
@@ -135,6 +168,11 @@ const SendButton = styled.button`
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 16px;
+    font-size: 14px;
   }
 `;
 
@@ -398,17 +436,17 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
   };
 
   return (
-    <ChatContainer>
+    <ChatContainer role="dialog" aria-modal="true" aria-label="Book Assistant Chat">
       <ChatHeader>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <h3 style={{ margin: 0 }}>Book Assistant</h3>
+          <h3 style={{ margin: 0 }} aria-label="Chatbot title">Book Assistant</h3>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
             fontSize: '10px',
             color: '#e0e0e0'
-          }}>
+          }} aria-label={`Backend status: ${backendStatus}`}>
             <div style={{
               width: '8px',
               height: '8px',
@@ -418,7 +456,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
               opacity: backendStatus === 'checking' ? pulseOpacity : 1,
               boxShadow: backendStatus === 'connected' ? '0 0 4px #4CAF50' :
                          backendStatus === 'disconnected' ? '0 0 4px #F44336' : 'none'
-            }}></div>
+            }} aria-hidden="true"></div>
             <span>
               {backendStatus === 'connected' ? 'Online' :
                backendStatus === 'disconnected' ? 'Offline' : 'Checking'}
@@ -430,17 +468,22 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
         </CloseButton>
       </ChatHeader>
 
-      <ChatMessages>
+      <ChatMessages role="log" aria-live="polite" aria-label="Chat messages">
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#999', marginTop: '20px' }}>
             Ask me anything about the book content!
           </div>
         ) : (
           messages.map((message) => (
-            <MessageBubble key={message.id} isUser={message.sender === 'user'}>
+            <MessageBubble
+              key={message.id}
+              isUser={message.sender === 'user'}
+              role="listitem"
+              aria-label={`${message.sender}: ${message.content}`}
+            >
               {message.content}
               {message.sources && message.sources.length > 0 && (
-                <div style={{ marginTop: '8px', fontSize: '0.8em', opacity: 0.8 }}>
+                <div style={{ marginTop: '8px', fontSize: '0.8em', opacity: 0.8 }} aria-label="Sources">
                   Sources: {message.sources.slice(0, 2).map((source, idx) =>
                     <span key={idx} title={source.title}>
                       {source.title.substring(0, 20)}{source.title.length > 20 ? '...' : ''}
@@ -453,7 +496,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
           ))
         )}
         {isLoading && (
-          <MessageBubble isUser={false}>
+          <MessageBubble isUser={false} aria-label="Loading response">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div style={{
                 width: '8px',
@@ -462,7 +505,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
                 backgroundColor: '#ccc',
                 marginRight: '4px',
                 animation: 'pulse 1.5s infinite'
-              }}></div>
+              }} aria-hidden="true"></div>
               <div style={{
                 width: '8px',
                 height: '8px',
@@ -470,31 +513,34 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
                 backgroundColor: '#ccc',
                 marginRight: '4px',
                 animation: 'pulse 1.5s infinite 0.3s'
-              }}></div>
+              }} aria-hidden="true"></div>
               <div style={{
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
                 backgroundColor: '#ccc',
                 animation: 'pulse 1.5s infinite 0.6s'
-              }}></div>
+              }} aria-hidden="true"></div>
             </div>
           </MessageBubble>
         )}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} aria-hidden="true" />
       </ChatMessages>
 
       {/* Show selected text indicator */}
       {currentSelectedText && (
-        <div style={{
-          padding: '8px 16px',
-          backgroundColor: '#e8f4fd',
-          border: '1px solid #2196f3',
-          borderRadius: '4px',
-          margin: '8px 16px',
-          fontSize: '12px',
-          color: '#1565c0'
-        }}>
+        <div
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#e8f4fd',
+            border: '1px solid #2196f3',
+            borderRadius: '4px',
+            margin: '8px 16px',
+            fontSize: '12px',
+            color: '#1565c0'
+          }}
+          aria-label={`Selected text: ${currentSelectedText.substring(0, 100)}${currentSelectedText.length > 100 ? '...' : ''}`}
+        >
           <strong>Selected text:</strong> "{currentSelectedText.substring(0, 100)}{currentSelectedText.length > 100 ? '...' : ''}"
           <button
             onClick={() => setCurrentSelectedText('')}
@@ -507,6 +553,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
               fontSize: '14px',
               fontWeight: 'bold'
             }}
+            aria-label="Dismiss selected text"
           >
             ×
           </button>
@@ -523,6 +570,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
                 cursor: 'pointer',
                 fontSize: '11px'
               }}
+              aria-label="Ask about selected text"
             >
               Ask about this
             </button>
@@ -530,15 +578,20 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
         </div>
       )}
 
-      <ChatInput>
+      <ChatInput role="form" aria-label="Message input">
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Ask about the book content..."
           disabled={isLoading}
+          aria-label="Type your message"
         />
-        <SendButton onClick={handleSendMessage} disabled={!inputValue.trim() || isLoading}>
+        <SendButton
+          onClick={handleSendMessage}
+          disabled={!inputValue.trim() || isLoading}
+          aria-label="Send message"
+        >
           Send
         </SendButton>
       </ChatInput>

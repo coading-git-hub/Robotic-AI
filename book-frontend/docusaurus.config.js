@@ -68,8 +68,8 @@ const config = {
         logo: {
           alt: 'Physical AI Logo',
           src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq7ZEMe-KdiynTMZJYIBXXDY36xtspQhiz4A&s',
-          width: 60,
-          height: 80,
+          width: 40,
+          height: 40,
         },
         items: [
           {
