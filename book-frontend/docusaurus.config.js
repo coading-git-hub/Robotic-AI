@@ -13,7 +13,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://robotic-ai-ryh2.vercel.app/',
+  url: 'https://robotic-ai-zlv7.vercel.app/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<org-name>/<repo-name>/'
   baseUrl: '/',
@@ -62,12 +62,14 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'https://t4.ftcdn.net/jpg/16/11/54/83/360_F_1611548359_XKzbKZriG6egyefgekjF4CB267h614xr.jpg',
       navbar: {
-        title: 'Physical AI & Humanoid Robotics',
+        title: 'Physial AI & Humanoid Robotics',
         logo: {
           alt: 'Physical AI Logo',
-          src: 'img/logo.svg',
+          src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq7ZEMe-KdiynTMZJYIBXXDY36xtspQhiz4A&s',
+          width: 60,
+          height: 80,
         },
         items: [
           {
@@ -78,7 +80,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/physical-ai-humanoid-robotics/physical-ai-humanoid-robotics',
+            href: 'https://github.com/coading-git-hub/Robotic-AI',
             label: 'GitHub',
             position: 'right',
           },
@@ -122,7 +124,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/physical-ai-humanoid-robotics/physical-ai-humanoid-robotics',
+                href: 'https://github.com/coading-git-hub/Robotic-AI',
               },
             ],
           },

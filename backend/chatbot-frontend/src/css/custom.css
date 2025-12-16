@@ -1,0 +1,77 @@
+/* Custom CSS for the book with chatbot integration */
+
+/**
+ * We use CSS variables set here to style the Docusaurus
+ * theme components.
+ */
+
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+}
+
+/* Ensure the chatbot doesn't interfere with page content */
+html {
+  scroll-padding-top: 90px; /* Account for fixed header */
+}
+
+/* Adjust body padding to account for the floating chat icon */
+body {
+  padding-bottom: 90px; /* Space for the chat icon and widget */
+}
+
+/* Ensure proper z-index management */
+.navbar {
+  z-index: 1001; /* Above the chat widget */
+}
+
+/* Custom styles for the chatbot container */
+#chatbot-container {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Adjustments for mobile responsiveness */
+@media (max-width: 996px) {
+  body {
+    padding-bottom: 85px;
+  }
+}
+
+/* Custom styles for better accessibility */
+button:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* Ensure proper spacing for the chat widget */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Improve focus indicators for better accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Reduce motion for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

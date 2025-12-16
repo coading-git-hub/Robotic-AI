@@ -1,0 +1,49 @@
+{
+  "name": "book-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "Frontend components for the RAG chatbot integrated with the book documentation",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.1.0",
+    "@docusaurus/module-type-aliases": "^3.1.0",
+    "@docusaurus/types": "^3.1.0",
+    "axios": "^1.6.0",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-components": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "chatbot",
+    "rag",
+    "docusaurus",
+    "documentation",
+    "ai",
+    "assistant"
+  ],
+  "author": "Physical AI Team",
+  "license": "MIT"
+}
