@@ -1,9 +1,10 @@
 import React from 'react';
 import OriginalLayout from '@theme-original/Layout';
 import ChatbotIntegration from '../components/Chatbot/Chatbot';
+import { BetterAuthProvider } from '../components/auth/BetterAuthProvider';
 
 // Get backend URL - using a safe approach for Docusaurus
-// Since process.env might not be available in the browser, we use a try-catch approach
+// Since we're using a unified API, both chatbot and auth use the same backend
 let BACKEND_URL = 'http://localhost:8002';
 
 try {
@@ -11,6 +12,8 @@ try {
   // For now, default to localhost, but allow override through window object if needed
   BACKEND_URL =
     (typeof window !== 'undefined' && window.CHATBOT_BACKEND_URL) ||
+    process.env.REACT_APP_BACKEND_URL ||
+    process.env.BACKEND_URL ||
     'http://localhost:8002';
 } catch (e) {
   // If there's any error accessing environment variables, default to localhost
@@ -19,9 +22,9 @@ try {
 
 export default function Layout(props) {
   return (
-    <>
+    <BetterAuthProvider backendUrl={BACKEND_URL}>
       <OriginalLayout {...props} />
       <ChatbotIntegration backendUrl={BACKEND_URL} />
-    </>
+    </BetterAuthProvider>
   );
 }

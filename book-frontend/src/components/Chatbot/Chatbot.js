@@ -698,7 +698,7 @@ export const APIClient = ({ backendUrl }) => {
 };
 
 // Main Integration Component
-export const ChatbotIntegration = ({ backendUrl = 'http://localhost:8000' }) => {
+export const ChatbotIntegration = ({ backendUrl = 'http://localhost:8002' }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [capturedText, setCapturedText] = useState('');
 

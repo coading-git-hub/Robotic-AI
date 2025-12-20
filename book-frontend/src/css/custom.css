@@ -5,6 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/* Include Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force include some classes that might not be detected */
+.bg-blue-500 { background-color: rgb(59 130 246); }
+.text-blue-600 { color: rgb(37 99 235); }
+.border-blue-500 { border-color: rgb(59 130 246); }
+.ring-blue-100 { --tw-ring-color: rgb(219 234 254); }
+.bg-green-500 { background-color: rgb(34 197 94); }
+.text-green-600 { color: rgb(22 163 74); }
+.border-green-500 { border-color: rgb(34 197 94); }
+.ring-green-100 { --tw-ring-color: rgb(187 247 208); }
+
 /* Custom CSS for Physical AI & Humanoid Robotics Course */
 
 /* Responsive adjustments for navigation sidebar */
@@ -138,6 +153,11 @@
   .navbar {
     padding: 0 0.5rem;
   }
+}
+
+/* Position auth navbar to the right */
+.navbar__right {
+  margin-left: auto;
 }
 
 /* Responsive adjustments for footer */

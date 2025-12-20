@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: Personalization API
+  description: API for content personalization based on user background
+  version: 1.0.0
+paths:
+  /api/personalization/personalize:
+    post:
+      summary: Trigger content personalization for a chapter based on user background
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chapter_id
+              properties:
+                chapter_id:
+                  type: string
+                  description: Identifier for the chapter to personalize
+      responses:
+        '200':
+          description: Content successfully personalized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalizationResponse'
+        '401':
+          description: Unauthorized - user must be authenticated
+        '404':
+          description: Chapter not found
+  /api/personalization/history:
+    get:
+      summary: Get user's personalization history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Personalization history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PersonalizationSession'
+        '401':
+          description: Unauthorized
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    PersonalizationResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+          description: Unique identifier for the personalization session
+        chapter_id:
+          type: string
+          description: Identifier for the chapter that was personalized
+        personalization_applied:
+          type: boolean
+          description: Whether personalization was successfully applied
+        content_variants:
+          type: object
+          description: Content variations based on user background
+          properties:
+            difficulty_level:
+              type: string
+              description: Adjusted difficulty level based on user background
+            examples:
+              type: array
+              items:
+                type: string
+              description: List of example types appropriate for user background
+            hardware_specific_content:
+              type: boolean
+              description: Whether hardware-specific content was included
+    PersonalizationSession:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the session
+        chapter_id:
+          type: string
+          description: Chapter that was personalized
+        background_applied:
+          type: object
+          description: Background information used for personalization
+          properties:
+            software_background:
+              type: string
+              enum: [Beginner, Frontend, Backend, AI]
+            hardware_background:
+              type: string
+              enum: [Low-end PC, Mid-range, High-end, GPU]
+        created_at:
+          type: string
+          format: date-time

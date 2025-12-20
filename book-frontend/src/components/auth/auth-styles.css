@@ -1,0 +1,151 @@
+/* Auth Component Styles - Ensuring compatibility with Docusaurus */
+
+.auth-form-container {
+  @apply w-full max-w-md mx-auto;
+}
+
+.auth-card {
+  @apply bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-xl p-8 border border-gray-200;
+}
+
+.auth-title {
+  @apply text-3xl font-bold text-gray-800 mb-2 text-center;
+}
+
+.auth-subtitle {
+  @apply text-gray-600 text-center mb-8;
+}
+
+.auth-form {
+  @apply space-y-6;
+}
+
+.auth-input-group {
+  @apply space-y-4;
+}
+
+.auth-input-wrapper {
+  @apply relative;
+}
+
+.auth-input {
+  @apply w-full px-4 pt-6 pb-2 rounded-lg border-2 transition-all duration-200 focus:outline-none pr-12 bg-white shadow-sm focus:shadow-md text-gray-900;
+}
+
+/* Fix for browser auto-fill styles */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  box-shadow: 0 0 0 30px white inset !important;
+  color: #1f2937 !important;
+  caret-color: #1f2937 !important;
+}
+
+/* Remove default browser styling for input fields */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  font-size: 16px; /* Prevent iOS zoom on focus */
+}
+
+/* Fix for dropdown text color */
+select {
+  color: #1f2937 !important; /* text-gray-900 */
+  background-color: white !important;
+}
+
+/* Ensure dropdown options have proper text color */
+select option {
+  color: #1f2937 !important; /* text-gray-900 */
+  background-color: white !important;
+}
+
+/* Fix for select dropdown text when focused */
+select:focus {
+  color: #1f2937 !important;
+}
+
+/* Fix for dropdown text in auth forms specifically */
+.auth-input-wrapper select {
+  color: #1f2937 !important;
+  background-color: white !important;
+}
+
+/* Ensure eye icon visibility */
+.auth-input-wrapper button {
+  color: #6b7280 !important; /* text-gray-500 */
+  z-index: 10;
+  background: transparent !important;
+  border: none !important;
+}
+
+.auth-input-wrapper button:hover {
+  color: #374151 !important; /* text-gray-700 */
+}
+
+/* Specific styles for password field wrapper to ensure eye icon visibility */
+.auth-input-wrapper .password-field-container {
+  position: relative;
+}
+
+.auth-input-wrapper .password-toggle-button {
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+}
+
+.auth-input-focused {
+  @apply border-blue-500 ring-4 ring-blue-100;
+}
+
+.auth-input-label {
+  @apply absolute left-4 transition-all duration-200 pointer-events-none;
+}
+
+.auth-input-label-focused {
+  @apply top-2 text-xs text-blue-600 font-medium;
+}
+
+.auth-input-label-normal {
+  @apply top-1/2 transform -translate-y-1/2 text-gray-500 text-sm;
+}
+
+.auth-error-message {
+  @apply mt-2 text-sm text-red-600 flex items-center;
+}
+
+.auth-button {
+  @apply w-full py-3 px-4 rounded-lg font-semibold text-white shadow-lg transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-300;
+}
+
+.auth-button-loading {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+.auth-button-active {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700;
+}
+
+.auth-link {
+  @apply text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200;
+}
+
+.auth-footer {
+  @apply mt-6 text-center text-sm text-gray-600;
+}
+
+/* Ensure these styles take precedence over Docusaurus defaults */
+.navbar__item .auth-navbar-item {
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown__menu .auth-dropdown-item {
+  width: 100%;
+  text-align: left;
+}

@@ -95,8 +95,8 @@ def load_configuration() -> Dict[str, Any]:
         'fallback_message': os.getenv('FALLBACK_MESSAGE', "I cannot answer based on the provided context."),
         'max_query_length': int(os.getenv('MAX_QUERY_LENGTH', 2000)),
         'max_selected_text_length': int(os.getenv('MAX_SELECTED_TEXT_LENGTH', 5000)),
-        'top_k_results': int(os.getenv('TOP_K_RESULTS', 5)),
-        'similarity_threshold': float(os.getenv('SIMILARITY_THRESHOLD', 0.3)),
+        'top_k_results': int(os.getenv('TOP_K_RESULTS', 10)),
+        'similarity_threshold': float(os.getenv('SIMILARITY_THRESHOLD', 0.1)),
         'retrieval_timeout': int(os.getenv('RETRIEVAL_TIMEOUT', 10))
     }
 
@@ -150,7 +150,13 @@ def initialize_cohere_client(api_key: str) -> Optional[cohere.Client]:
         logger.info("Cohere client initialized and validated successfully")
         return client
     except Exception as e:
+        # Handle Cohere API errors like rate limits
         logger.error(f"Failed to initialize or validate Cohere client: {e}")
+        # Check if it's a rate limit error by looking at the error message or status code
+        if hasattr(e, 'status_code') and e.status_code == 429:
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
+        elif "429" in str(e) or "rate limit" in str(e).lower() or "trial limit" in str(e).lower():
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
         return None
 
 
@@ -255,6 +261,11 @@ def embed_query(cohere_client: cohere.Client, query: str) -> Optional[List[float
             return None
     except Exception as e:
         logger.error(f"Failed to embed query: {e}")
+        # Check if it's a rate limit error by looking at the error message or status code
+        if hasattr(e, 'status_code') and e.status_code == 429:
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
+        elif "429" in str(e) or "rate limit" in str(e).lower() or "trial limit" in str(e).lower():
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
         return None
 
 
@@ -295,17 +306,33 @@ def get_context(query: str, qdrant_client: QdrantClient, config: Dict[str, Any],
     # Perform vector search in Qdrant for additional context
     try:
         # First, embed the query using Cohere
-        cohere_client = initialize_cohere_client(config['cohere_api_key'])
+        # Use the globally initialized client to avoid repeated initialization
+        global cohere_client
         if not cohere_client:
-            context_result['retrieval_successful'] = False
-            context_result['error_message'] = 'Failed to initialize Cohere client for embedding'
-            return context_result
+            # If Cohere is not available, we can't perform vector search in Qdrant
+            # but we can still return the selected text if available
+            logger.warning("Cohere client not available, skipping vector search in Qdrant")
+            if selected_text:  # If there's selected text, we still have some context
+                context_result['retrieval_successful'] = True
+                return context_result
+            else:
+                # If no selected text and Cohere is unavailable, we have no context
+                context_result['retrieval_successful'] = True  # Still successful, just no additional context
+                context_result['error_message'] = 'Cohere client not available for vector search, using available context only.'
+                return context_result
 
         query_embedding = embed_query(cohere_client, query)
         if not query_embedding:
-            context_result['retrieval_successful'] = False
-            context_result['error_message'] = 'Failed to embed query'
-            return context_result
+            # If embedding fails, we still have the selected text context if available
+            logger.warning("Failed to embed query, using available context only")
+            if selected_text:  # If there's selected text, we still have some context
+                context_result['retrieval_successful'] = True
+                return context_result
+            else:
+                # If no selected text and embedding fails, we have no context
+                context_result['retrieval_successful'] = True  # Still successful, just no additional context
+                context_result['error_message'] = 'Failed to embed query, using available context only.'
+                return context_result
 
         # Perform search in Qdrant
         search_results = qdrant_client.query_points(
@@ -328,8 +355,11 @@ def get_context(query: str, qdrant_client: QdrantClient, config: Dict[str, Any],
                 'score': result.score
             }
             context_result['chunks'].append(chunk)
+            logger.debug(f"Retrieved chunk: id={result.id}, score={result.score:.3f}, title='{payload.get('title', 'N/A')}'")
 
         logger.info(f"Retrieved {len(search_results)} chunks from Qdrant for query: '{query[:50]}{'...' if len(query) > 50 else ''}'")
+        if search_results:
+            logger.info(f"Top chunk scores: {[f'{r.score:.3f}' for r in search_results[:3]]}")
 
     except Exception as e:
         logger.error(f"Failed to retrieve context from Qdrant: {e}")
@@ -360,11 +390,13 @@ def prepare_agent_context(context: Dict[str, Any], query: str) -> Dict[str, Any]
 
     # Create a system prompt that emphasizes grounding in provided context
     system_prompt = (
-        "You are an educational AI assistant that answers questions based strictly on the provided context. "
-        "Your responses must be grounded in the provided text and you must not use any external knowledge or hallucinate information. "
-        "If the provided context does not contain sufficient information to answer the query, respond with: "
-        f"\"{os.getenv('FALLBACK_MESSAGE', 'I cannot answer based on the provided context.')}.\" "
-        "Prioritize information from 'User Selected Text' if it's provided, as this represents text the user specifically highlighted."
+        "You are an educational AI assistant that answers questions based on the provided context. "
+        "Your responses must be grounded in the provided text. Use the context to answer questions accurately. "
+        "If the provided context contains relevant information, synthesize it into a coherent answer. "
+        "If the provided context does not contain sufficient information to fully answer the query, "
+        f"state what you can answer based on the context and note any limitations. "
+        "Prioritize information from 'User Selected Text' if it's provided, as this represents text the user specifically highlighted. "
+        "Be helpful and provide as complete an answer as possible from the available context."
     )
 
     formatted_context['system_prompt'] = system_prompt
@@ -387,6 +419,9 @@ def prepare_agent_context(context: Dict[str, Any], query: str) -> Dict[str, Any]
         context_parts.append(context_part)
 
     formatted_context['user_context'] = "\n".join(context_parts)
+
+    logger.debug(f"Prepared context for agent: {len(context_parts)} chunks, total context length: {len(formatted_context['user_context'])}")
+    logger.debug(f"Context preview: {formatted_context['user_context'][:500]}...")
 
     return formatted_context
 
@@ -412,6 +447,9 @@ def call_agent(formatted_context: Dict[str, Any], cohere_client: cohere.Client, 
         )
 
         # Use Cohere's chat API to generate a response
+        logger.debug(f"Sending to Cohere - Preamble: {formatted_context['system_prompt'][:200]}...")
+        logger.debug(f"Full prompt length: {len(full_prompt)}")
+
         response = cohere_client.chat(
             message=full_prompt,
             preamble=formatted_context['system_prompt'],
@@ -421,10 +459,16 @@ def call_agent(formatted_context: Dict[str, Any], cohere_client: cohere.Client, 
         )
 
         logger.info(f"Agent generated response for query: '{formatted_context['query'][:50]}{'...' if len(formatted_context['query']) > 50 else ''}'")
+        logger.debug(f"Agent response: {response.text[:500]}...")
         return response.text
 
     except Exception as e:
         logger.error(f"Failed to call agent: {e}")
+        # Check if it's a rate limit error by looking at the error message or status code
+        if hasattr(e, 'status_code') and e.status_code == 429:
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
+        elif "429" in str(e) or "rate limit" in str(e).lower() or "trial limit" in str(e).lower():
+            logger.error("Rate limit exceeded or trial limit reached. Please check your Cohere API key plan.")
         return os.getenv('FALLBACK_MESSAGE', 'I cannot answer based on the provided context.')
 
 
@@ -532,6 +576,82 @@ def format_response(agent_response: str, context: Dict[str, Any], validation: Di
     )
 
 
+# Fallback response generator when Cohere API is unavailable
+def generate_fallback_response(query: str, context_chunks: List[Dict[str, Any]]) -> str:
+    """
+    Generate a fallback response when Cohere API is unavailable.
+
+    Args:
+        query: User's query
+        context_chunks: List of context chunks retrieved from Qdrant
+
+    Returns:
+        Fallback response string
+    """
+    # Try to find relevant information in the context chunks
+    relevant_content = []
+    query_lower = query.lower()
+    query_words = set(query_lower.split())
+
+    for chunk in context_chunks:
+        content = chunk.get('content', '').strip()
+        title = chunk.get('title', '').strip()
+        if not content:
+            continue
+
+        content_lower = content.lower()
+        title_lower = title.lower()
+
+        # Check if chunk contains significant overlap with query
+        content_words = set(content_lower.split())
+        title_words = set(title_lower.split())
+
+        # Calculate word overlap
+        content_overlap = len(query_words.intersection(content_words))
+        title_overlap = len(query_words.intersection(title_words))
+
+        # Include if there's meaningful overlap or if it's user-selected text
+        if (content_overlap >= 2 or title_overlap >= 1 or chunk.get('id') == 'selected_text'):
+            # Extract more meaningful content - try to find sentences containing query words
+            import re
+            sentences = re.split(r'[.!?]+', content)
+            relevant_sentences = []
+
+            for sentence in sentences:
+                sentence_lower = sentence.lower()
+                if any(word in sentence_lower for word in query_words):
+                    relevant_sentences.append(sentence.strip())
+
+            if relevant_sentences:
+                # Use relevant sentences
+                excerpt = ' '.join(relevant_sentences[:2])  # First 2 relevant sentences
+            else:
+                # Fallback to beginning of content
+                excerpt = content[:300] + "..." if len(content) > 300 else content
+
+            relevant_content.append({
+                'title': title,
+                'content': excerpt,
+                'score': chunk.get('score', 0)
+            })
+
+    if relevant_content:
+        # Sort by score and provide a structured response
+        relevant_content.sort(key=lambda x: x['score'], reverse=True)
+
+        response = f"Based on the available context, here's information related to your query '{query}':\n\n"
+
+        for i, item in enumerate(relevant_content[:3]):  # Show up to 3 relevant chunks
+            if item['title']:
+                response += f"**{item['title']}**\n"
+            response += f"{item['content']}\n\n"
+
+        response += "\n*Note: This is a simplified response as the AI service is currently unavailable.*"
+        return response
+    else:
+        return os.getenv('FALLBACK_MESSAGE', f"I cannot provide a specific answer based on the available context. The AI service is currently unavailable. Your query was: {query}")
+
+
 # FastAPI app initialization
 app = FastAPI(
     title="Context-Aware RAG Agent API",
@@ -548,6 +668,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import and include auth routes
+try:
+    import sys
+    import os
+    # Add backend directory to path for imports
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+    
+    from src.auth.routes import router as auth_routes
+    from src.database import create_tables
+    # Create database tables on startup
+    create_tables()
+    # Include auth routes
+    app.include_router(auth_routes, prefix="/api/auth", tags=["Authentication"])
+    logger.info("Auth routes included successfully")
+except Exception as e:
+    logger.error(f"Failed to include auth routes: {e}")
+    import traceback
+    logger.error(traceback.format_exc())
+    logger.warning("Auth endpoints will not be available.")
+
 
 # Global variables to store initialized clients
 cohere_client = None
@@ -555,33 +697,42 @@ qdrant_client = None
 config = None
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize clients and configuration when the app starts."""
+def ensure_initialized():
+    """Ensure clients and configuration are initialized."""
     global cohere_client, qdrant_client, config
 
-    try:
-        # Load configuration
-        config = load_configuration()
-        logger.info("Configuration loaded successfully")
+    if config is None:
+        try:
+            # Load configuration
+            config = load_configuration()
+            logger.info("Configuration loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load configuration: {e}")
+            raise
 
-        # Initialize Cohere client
-        cohere_client = initialize_cohere_client(config['cohere_api_key'])
-        if not cohere_client:
-            logger.error("Failed to initialize Cohere client")
+    if cohere_client is None:
+        try:
+            # Initialize Cohere client
+            cohere_client = initialize_cohere_client(config['cohere_api_key'])
+            if not cohere_client:
+                logger.warning("Cohere client initialization failed, running in fallback mode")
+        except Exception as e:
+            logger.warning(f"Cohere client initialization error: {e}, running in fallback mode")
 
-        # Initialize Qdrant client
-        qdrant_client = initialize_qdrant_client(
-            config['qdrant_url'],
-            config['qdrant_api_key'],
-            config['retrieval_timeout']
-        )
-        if not qdrant_client:
-            logger.error("Failed to initialize Qdrant client")
-
-        logger.info("Application startup completed")
-    except Exception as e:
-        logger.error(f"Startup failed: {e}")
+    if qdrant_client is None:
+        try:
+            # Initialize Qdrant client
+            qdrant_client = initialize_qdrant_client(
+                config['qdrant_url'],
+                config['qdrant_api_key'],
+                config['retrieval_timeout']
+            )
+            if not qdrant_client:
+                logger.error("Failed to initialize Qdrant client")
+                raise ValueError("Qdrant client initialization failed")
+        except Exception as e:
+            logger.error(f"Failed to initialize Qdrant client: {e}")
+            raise
 
 
 @app.post("/api/agent/query", response_model=AgentQueryResponse)
@@ -603,9 +754,17 @@ async def query_agent(request: AgentQueryRequest):
         if not validation_result['is_valid']:
             raise HTTPException(status_code=400, detail=validation_result['error_message'])
 
-        # Check if clients are initialized
-        if not cohere_client or not qdrant_client or not config:
-            raise HTTPException(status_code=500, detail="Service not properly initialized")
+        # Ensure clients are initialized
+        try:
+            ensure_initialized()
+        except Exception as e:
+            # Check if it's specifically a Qdrant issue (which is critical)
+            # If it's just Cohere, we can continue with fallback
+            if "Qdrant client initialization failed" in str(e):
+                raise HTTPException(status_code=500, detail=f"Service initialization failed: {str(e)}")
+            else:
+                # Other initialization issues, but we can still proceed
+                logger.warning(f"Non-critical initialization issue: {e}")
 
         # Get context from Qdrant and user selection
         context_result = get_context(
@@ -621,8 +780,19 @@ async def query_agent(request: AgentQueryRequest):
         # Prepare context for the agent
         formatted_context = prepare_agent_context(context_result, validation_result['cleaned_query'])
 
-        # Call the agent
-        agent_response = call_agent(formatted_context, cohere_client, config)
+        # Check if Cohere client is available, if not use fallback
+        global cohere_client
+        if cohere_client:
+            logger.info("Using Cohere client for response generation")
+            # Call the agent
+            agent_response = call_agent(formatted_context, cohere_client, config)
+        else:
+            # Use fallback mechanism when Cohere API is unavailable
+            logger.warning("Cohere client not available, using fallback response")
+            agent_response = generate_fallback_response(
+                validation_result['cleaned_query'],
+                context_result['chunks']
+            )
 
         # Validate the response
         response_validation = validate_response(agent_response, context_result)
@@ -650,30 +820,46 @@ async def health_check():
         HealthCheckResponse with service status information
     """
     try:
-        health_status = {
-            'status': 'healthy',
-            'services': {
-                'cohere_api': cohere_client is not None,
-                'qdrant_db': qdrant_client is not None,
-                'config_loaded': config is not None
+        try:
+            ensure_initialized()
+            health_status = {
+                'status': 'healthy',
+                'services': {
+                    'cohere_api': True,
+                    'qdrant_db': True,
+                    'config_loaded': True
+                }
             }
-        }
 
-        # Test Cohere connectivity if client exists
-        if cohere_client:
+            # Test Cohere connectivity
             try:
                 cohere_client.embed(texts=["health"], model="embed-english-v3.0", input_type="search_query")
                 health_status['services']['cohere_api'] = True
-            except:
+            except Exception as e:
+                logger.error(f"General error during Cohere health check: {e}")
+                # Check if it's a rate limit error by looking at the error message or status code
+                if hasattr(e, 'status_code') and e.status_code == 429:
+                    logger.warning("Cohere rate limit reached during health check")
+                elif "429" in str(e) or "rate limit" in str(e).lower() or "trial limit" in str(e).lower():
+                    logger.warning("Cohere rate limit reached during health check")
                 health_status['services']['cohere_api'] = False
 
-        # Test Qdrant connectivity if client exists
-        if qdrant_client:
+            # Test Qdrant connectivity
             try:
                 qdrant_client.get_collections()
                 health_status['services']['qdrant_db'] = True
             except:
                 health_status['services']['qdrant_db'] = False
+
+        except Exception as e:
+            health_status = {
+                'status': 'unhealthy',
+                'services': {
+                    'cohere_api': False,
+                    'qdrant_db': False,
+                    'config_loaded': False
+                }
+            }
 
         # Overall status
         all_services_healthy = all(health_status['services'].values())
