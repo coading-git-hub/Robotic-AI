@@ -224,7 +224,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
   useEffect(() => {
     const checkBackendStatus = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/health`, {
+        const response = await fetch(`https://kiran-ahmed-phisical-ai.hf.space/api/health`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -304,7 +304,7 @@ export const ChatWidget = ({ isOpen, onClose, backendUrl, selectedText: propSele
 
     try {
       // Send query to Agent SDK backend
-      const response = await fetch(`${backendUrl}/api/agent/query`, {
+      const response = await fetch(`https://kiran-ahmed-phisical-ai.hf.space/api/agent/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -649,7 +649,7 @@ export const TextSelectionHandler = ({ onTextSelected, onOpenChat }) => {
 export const APIClient = ({ backendUrl }) => {
   const sendQuery = async (query, selectedText = '') => {
     try {
-      const response = await fetch(`${backendUrl}/api/agent/query`, {
+      const response = await fetch(`https://kiran-ahmed-phisical-ai.hf.space/api/agent/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -679,7 +679,7 @@ export const APIClient = ({ backendUrl }) => {
 
   const checkHealth = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/health`);
+      const response = await fetch(`https://kiran-ahmed-phisical-ai.hf.space//api/health`);
       if (!response.ok) {
         throw new Error(`Health check failed with status: ${response.status}`);
       }
@@ -698,7 +698,7 @@ export const APIClient = ({ backendUrl }) => {
 };
 
 // Main Integration Component
-export const ChatbotIntegration = ({ backendUrl = 'http://localhost:8002' }) => {
+export const ChatbotIntegration = ({ backendUrl = 'https://kiran-ahmed-phisical-ai.hf.space/' }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [capturedText, setCapturedText] = useState('');
 
