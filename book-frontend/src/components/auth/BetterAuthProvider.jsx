@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 // Auth Provider Component
-export const BetterAuthProvider = ({ children, backendUrl = 'http://localhost:8002' }) => {
+export const BetterAuthProvider = ({ children, backendUrl = 'https://kiran-ahmed-auth.hf.space/' }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,7 +41,7 @@ export const BetterAuthProvider = ({ children, backendUrl = 'http://localhost:80
 
   // Signup function using backend API
   const signup = async (userData) => {
-    const url = `${backendUrl}/api/auth/signup`;
+    const url = `https://kiran-ahmed-auth.hf.space/api/auth/signup`;
     console.log('Signup request URL:', url);
     console.log('Signup request data:', userData);
     
@@ -105,7 +105,7 @@ export const BetterAuthProvider = ({ children, backendUrl = 'http://localhost:80
 
   // Signin function using backend API
   const signin = async (credentials) => {
-    const response = await fetch(`${backendUrl}/api/auth/signin`, {
+    const response = await fetch(`https://kiran-ahmed-auth.hf.space/api/auth/signin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export const BetterAuthProvider = ({ children, backendUrl = 'http://localhost:80
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${backendUrl}/api/auth/profile`, {
+    const response = await fetch(`https://kiran-ahmed-auth.hf.space/api/auth/profile`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -172,7 +172,7 @@ export const BetterAuthProvider = ({ children, backendUrl = 'http://localhost:80
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${backendUrl}/api/auth/profile`, {
+    const response = await fetch(`https://kiran-ahmed-auth.hf.space/api/auth/profile`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
